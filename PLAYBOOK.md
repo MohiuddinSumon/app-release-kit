@@ -38,13 +38,14 @@ Make these true, then confirm with `kit.py check`:
 ## Phase 3: store listing
 1. Fill `[listing.<lang>]` in `release-kit.toml`: `short` (max 80), `full` (max 4000), optional `title` (max 30) per language. Write natively in each language; no machine-literal translation. Lead with what the app does for the user, not a feature dump; no keyword stuffing or competitor names.
 2. `python $KIT/scripts/kit.py listing $APP` writes `store_assets/LISTING.txt` (copy/paste) and `store_assets/metadata/android/<lang>/*.txt`.
-3. Release notes live in ONE file, `release-notes.txt`, one block per language (`<en-US>...</en-US>`, `<bn-BD>...</bn-BD>`), max 500 characters each. Ask the user for the changes each release, or draft from `git log` and let them edit.
+3. Release notes: draft the English bullets with `python $KIT/scripts/kit.py notes $APP --write` (from commits since the last release), then rewrite them in plain, user-facing language and translate every other language. They live in ONE file, `release-notes.txt`, one block per language (`<en-US>...</en-US>`, `<bn-BD>...</bn-BD>`), max 500 characters each. Ask the user for the changes each release, or draft from `git log` and let them edit.
 
 ## Phase 4: graphics
+Screenshots must be real. Preferred, no emulator needed: the user plugs in their phone with USB debugging and runs `capture-screenshots.bat` (generated into the app; it walks through the `[[screens]]` list in `release-kit.toml`, sets a clean status bar and pulls the images over `adb`). Alternatively they can drop their own screenshots into `store_assets/raw_screenshots/`. The agent cannot reach the user's phone, so ask for the files to be committed, then:
 ```bash
 python $KIT/scripts/kit.py graphics $APP
 ```
-Fill `[[screenshots]]` (file + short caption) in `release-kit.toml` first. Output: `store_assets/feature_graphic_1024x500.png` and `store_assets/screenshots/phone_NN.png` (set `graphics.tablet = true` for 7"/10" sizes). Look at the rendered PNGs yourself before reporting done. Needs Node + Playwright; if unavailable, tell the user.
+Fill `[[screens]]` (name, hint, caption) in `release-kit.toml` first; captions become the headlines on the framed images. Output: `store_assets/feature_graphic_1024x500.png` and `store_assets/screenshots/phone_NN.png` (set `graphics.tablet = true` for 7"/10" sizes). Look at the rendered PNGs yourself before reporting done. Needs Node + Playwright; if unavailable, tell the user.
 
 ## Phase 5: website and privacy policy
 `init` already rendered `website/` (home, `/privacy`, `/terms`, sitemap, robots, Vercel config). Review `privacy.html` against the manifest: every permission must be explained, and nothing may be claimed that the code does not do. Deployment (human, ~5 minutes): Vercel project with Root Directory `website`, add the domain, add the DNS record. Then add the app card to the developer's products page (snippet in `website/README.md`).

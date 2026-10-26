@@ -5,6 +5,7 @@
     python scripts/kit.py listing <app_repo>              # (re)write the store listing files from release-kit.toml
     python scripts/kit.py check <app_repo>                # lint everything Play review usually trips over
     python scripts/kit.py rename-package <app_repo> <new.package> [--namespace] [--dry-run]
+    python scripts/kit.py notes <app_repo> [--write]      # draft English release notes from recent commits
     python scripts/kit.py graphics <app_repo>             # feature graphic + framed screenshots (needs Node + Playwright)
 
 Standard library only (Python 3.11+).
@@ -63,6 +64,19 @@ def load_config(app_repo: Path) -> dict:
         "graphics": raw.get("graphics", {}),
         "screenshots": raw.get("screenshots", []),
     }
+    # [[screens]] drive both the phone-capture script and the framed graphics
+    screens = []
+    for i, sc in enumerate(raw.get("screens", []), 1):
+        name = re.sub(r"[^a-z0-9]+", "-", sc.get("name", f"screen{i}").lower()).strip("-") or f"screen{i}"
+        hint = sc.get("hint", sc.get("name", f"Screen {i}"))
+        screens.append({
+            "file": f"{i:02d}_{name}.png",
+            "hint_ps": hint.replace("'", "''"),
+            "caption": sc.get("caption", ""),
+        })
+    ctx["screens"] = screens
+    if not ctx["screenshots"]:
+        ctx["screenshots"] = [{"file": f"store_assets/raw_screenshots/{sc['file']}", "caption": sc["caption"]} for sc in screens]
     ctx["release_notes_template"] = "".join(
         f"<{lang}>\nWhat's new:\n- \n</{lang}>\n" for lang in ctx["languages"]
     )
@@ -135,6 +149,9 @@ def cmd_init(a):
         "android/release.bat.tpl": "release.bat",
         "android/release.sh": "release.sh",
         "android/release-notes.txt.tpl": "release-notes.txt",
+        "android/draft-release-notes.ps1.tpl": "draft-release-notes.ps1",
+        "android/capture-screenshots.ps1.tpl": "capture-screenshots.ps1",
+        "android/capture-screenshots.bat.tpl": "capture-screenshots.bat",
         "android/gitattributes": ".gitattributes",
         "store/PLAY_CONSOLE_CHECKLIST.md.tpl": "docs/PLAY_CONSOLE_CHECKLIST.md",
         "store/PLAY_STORE_PERMISSIONS.md.tpl": "docs/PLAY_STORE_PERMISSIONS.md",
@@ -413,6 +430,50 @@ def cmd_graphics(a):
     sys.exit(r.returncode)
 
 
+
+# ----------------------------------------------------------------------------- notes (draft release notes from git)
+SKIP = re.compile(r"^(merge|chore|refactor|docs?|ci|test|build|bump|release|wip)\b|release\.ps1|readme|gradle wrapper|keystore|\.gitignore|typo|temporary|park |website|privacy policy|terms", re.I)
+
+
+def draft_notes(app: Path, since: str | None = None, limit: int = 450) -> list[str]:
+    def git(*args):
+        r = subprocess.run(["git", *args], cwd=app, capture_output=True, text=True)
+        return r.stdout.strip() if r.returncode == 0 else ""
+    if not since:
+        since = git("describe", "--tags", "--abbrev=0") or git("log", "-1", "--format=%H", "-G", "versionCode", "--", "app/build.gradle.kts")
+    log = git("log", f"{since}..HEAD", "--no-merges", "--pretty=%s") if since else git("log", "-n", "30", "--no-merges", "--pretty=%s")
+    out, used, seen = [], len("What's new:\n"), set()
+    for subject in log.splitlines():
+        subject = subject.strip().rstrip(".")
+        if not subject or SKIP.search(subject) or subject.lower() in seen:
+            continue
+        seen.add(subject.lower())
+        line = "- " + subject[0].upper() + subject[1:]
+        if used + len(line) + 1 > limit:
+            break
+        out.append(line)
+        used += len(line) + 1
+    return out
+
+
+def cmd_notes(a):
+    app = Path(a.app_repo).resolve()
+    lines = draft_notes(app, a.since)
+    if not lines:
+        sys.exit("No user-facing commits found since the last release. Write the notes by hand.")
+    body = "What's new:\n" + "\n".join(lines)
+    if a.write:
+        path = app / "release-notes.txt"
+        raw = path.read_text(encoding="utf-8") if path.exists() else ""
+        if re.search(r"(?s)<en-US>.*?</en-US>", raw):
+            raw = re.sub(r"(?s)<en-US>.*?</en-US>", lambda m: f"<en-US>\n{body}\n</en-US>", raw, count=1)
+        else:
+            raw = f"<en-US>\n{body}\n</en-US>\n" + raw
+        path.write_text(raw, encoding="utf-8")
+        print(f"Updated the <en-US> block in {path.name}. Translate or rewrite the other languages, then review.")
+    print(body)
+
+
 # ----------------------------------------------------------------------------- main
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -422,6 +483,7 @@ def main():
     s = sub.add_parser("check"); s.add_argument("app_repo"); s.set_defaults(fn=cmd_check)
     s = sub.add_parser("rename-package"); s.add_argument("app_repo"); s.add_argument("new_package")
     s.add_argument("--namespace", action="store_true"); s.add_argument("--dry-run", action="store_true"); s.set_defaults(fn=cmd_rename)
+    s = sub.add_parser("notes"); s.add_argument("app_repo"); s.add_argument("--since"); s.add_argument("--write", action="store_true"); s.set_defaults(fn=cmd_notes)
     s = sub.add_parser("graphics"); s.add_argument("app_repo"); s.set_defaults(fn=cmd_graphics)
     a = p.parse_args()
     a.fn(a)

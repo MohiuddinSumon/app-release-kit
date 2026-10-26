@@ -11,7 +11,8 @@ It was extracted from shipping *Salah Daily* (`com.rocketlab.salahdaily`) and re
 | Release script (version bump, signing, AAB) | `release.bat` / `release.ps1` generated for the app; keystore is named after the package ID |
 | Release notes in every language | one `release-notes.txt` with `<en-US>...</en-US>` / `<bn-BD>...</bn-BD>` blocks, length-checked, paste as is |
 | Store listing text | `store_assets/LISTING.txt` (copy/paste) plus fastlane-style `metadata/android/<lang>/` files |
-| Feature graphic and screenshots | `kit.py graphics` renders 1024x500 and framed phone (and tablet) images from your raw screenshots |
+| Screenshots | `capture-screenshots.bat` takes them from your **real phone over USB** (no emulator); `kit.py graphics` frames them and renders the 1024x500 feature graphic |
+| Release-note draft | `kit.py notes` (agent) or the optional prompt in `release.bat` drafts English bullets from commit messages |
 | Website, privacy policy, terms | rendered from your privacy facts; deploy `website/` to Vercel |
 | Play Console forms | `docs/PLAY_CONSOLE_CHECKLIST.md` and `docs/PLAY_STORE_PERMISSIONS.md` with ready wording |
 | "Will review reject this?" | `kit.py check` lints listing lengths, permissions, assets, signing and wiring |

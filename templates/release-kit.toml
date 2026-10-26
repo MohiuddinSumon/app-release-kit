@@ -35,3 +35,10 @@ short = "Max 80 characters."
 full = """
 Up to 4000 characters.
 """
+
+# One entry per store screenshot. `capture-screenshots.bat` asks you to open each one on your phone
+# and captures it over USB (no emulator). `caption` is the headline on the framed Play Store image.
+[[screens]]
+name = "home"
+hint = "Home screen with sample data"
+caption = "Your headline here"

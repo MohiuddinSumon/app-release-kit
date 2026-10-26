@@ -109,6 +109,26 @@ Write-Host ""
 Write-Host "Release notes for $VersionName (release-notes.txt):"
 $releaseNotes = Read-ReleaseNotes $notesPath
 Show-ReleaseNotes $releaseNotes
+$draftScript = Join-Path $PSScriptRoot "draft-release-notes.ps1"
+if ((Test-Path $draftScript) -and ((Read-Host "Draft the English notes from recent commits (you can edit them next)? [y/N]") -eq "y")) {
+    try {
+        $draft = ((& $draftScript) | Out-String).Trim()
+        if ($draft) {
+            $raw = [System.IO.File]::ReadAllText($notesPath, [System.Text.Encoding]::UTF8)
+            $block = "<en-US>`r`nWhat's new:`r`n$draft`r`n</en-US>"
+            $eval = [System.Text.RegularExpressions.MatchEvaluator]{ param($m) $block }
+            $raw = [regex]::Replace($raw, '(?s)<en-US>.*?</en-US>', $eval)
+            [System.IO.File]::WriteAllText($notesPath, $raw, (New-Object System.Text.UTF8Encoding $false))
+            $releaseNotes = Read-ReleaseNotes $notesPath
+            Write-Host "Draft written to the en-US block. Other languages are unchanged: translate or rewrite them yourself (or ask your agent)." -ForegroundColor Yellow
+            Show-ReleaseNotes $releaseNotes
+        } else {
+            Write-Host "No user-facing commits found since the last release." -ForegroundColor Yellow
+        }
+    } catch {
+        Write-Host "Could not create a draft: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
 if ((Read-Host "Edit the release notes now? [y/N]") -eq "y") {
     Start-Process notepad.exe $notesPath -Wait
     $releaseNotes = Read-ReleaseNotes $notesPath

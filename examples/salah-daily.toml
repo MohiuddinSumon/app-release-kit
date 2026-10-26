@@ -62,10 +62,22 @@ bg1 = "#09130E"
 bg2 = "#183327"
 accent = "#10B981"
 
-[[screenshots]]
-file = "store_assets/raw_screenshots/01.png"
+[[screens]]
+name = "home"
+hint = "Home: prayer times, with one prayer ticked"
 caption = "Never miss a prayer"
 
-[[screenshots]]
-file = "store_assets/raw_screenshots/02.png"
-caption = "Track every prayer"
+[[screens]]
+name = "tracker"
+hint = "History calendar with a streak"
+caption = "Track every prayer and your streak"
+
+[[screens]]
+name = "guide"
+hint = "Prayer guide: Learn how to pray"
+caption = "Learn how to pray, step by step"
+
+[[screens]]
+name = "widget"
+hint = "Home screen with the widget (open the launcher, not the app)"
+caption = "Prayer times on your home screen"
