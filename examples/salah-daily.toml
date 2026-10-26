@@ -1,0 +1,71 @@
+# Real example: the config that Salah Daily would have used. Copy and edit for a new app.
+[app]
+name = "Salah Daily"
+subtitle = "Prayer Tracker"
+slug = "salah-daily"
+package = "com.rocketlab.salahdaily"
+domain = "salahdaily.squarebrowser.com"
+tagline = "Prayer times & widgets, Qibla compass, namaz tracker, wudu guide & Quran surahs."
+category = "Lifestyle"
+languages = ["en-US", "bn-BD"]
+
+[privacy]
+has_ads = false
+has_accounts = false
+collects_personal_data = false
+uses_location = true
+uses_internet = true
+internet_purpose = "stream recitation audio from public Quran audio services"
+uses_notifications = true
+uses_exact_alarms = true
+uses_full_screen_alert = true
+education_disclaimer = true
+disclaimer_text = "The guides in this app may contain mistakes. Please verify any ruling with your trusted mufti or scholar before acting on it."
+
+[[features]]
+icon = "🕌"
+title = "Accurate prayer times"
+text = "Fajr to Isha with the method that fits your region, Hanafi or standard Asr, and a countdown to the next prayer."
+
+[[features]]
+icon = "📱"
+title = "Home-screen widgets"
+text = "See the running prayer at a glance and tick it off without opening the app. Missed prayers turn red."
+
+[[features]]
+icon = "🧭"
+title = "Qibla compass"
+text = "A live compass that tells you the shortest way to turn, with distance to Makkah."
+
+[[features]]
+icon = "🔒"
+title = "Private by design"
+text = "Your location and history stay on your phone. No ads, no tracking, no sign-up."
+
+[listing.en-US]
+short = "Prayer times & widgets, Qibla compass, namaz tracker, wudu guide & Quran surahs"
+full = """
+Salah Daily: Prayer Tracker is a free, ad-free prayer app. (Replace with the full description, up to 4000 characters.)
+"""
+
+[listing.bn-BD]
+title = "সালাহ ডেইলি: নামাজ ট্র্যাকার"
+short = "নামাজের সময় ও উইজেট, কিবলা কম্পাস, নামাজ ট্র্যাকার, ওযু গাইড ও কুরআনের সূরা"
+full = """
+সালাহ ডেইলি একটি বিজ্ঞাপনমুক্ত নামাজ অ্যাপ। (এখানে পূর্ণ বিবরণ দিন।)
+"""
+
+[graphics]
+tablet = false
+[graphics.colors]
+bg1 = "#09130E"
+bg2 = "#183327"
+accent = "#10B981"
+
+[[screenshots]]
+file = "store_assets/raw_screenshots/01.png"
+caption = "Never miss a prayer"
+
+[[screenshots]]
+file = "store_assets/raw_screenshots/02.png"
+caption = "Track every prayer"

@@ -1,0 +1,37 @@
+# release-kit.toml - the ONE file you (or the agent) fill in per app.
+# Everything else (website, privacy policy, store listing, release script) is generated from it.
+
+[app]
+name = "My App"                       # launcher name, short (<= 12 chars looks best)
+subtitle = "Short Tagline"            # Play title becomes "<name>: <subtitle>" (max 30 characters)
+slug = "my-app"                       # file names, e.g. my-app-1.0.0-1.aab
+package = "com.rocketlab.myapp"       # Play application ID - PERMANENT after the first upload
+domain = ""                           # leave empty to use <slug without dashes>.<base_domain>
+tagline = "One sentence that sells the app."
+category = "Lifestyle"
+languages = ["en-US"]                 # add "bn-BD" etc.
+
+# Facts the privacy policy and Data safety answers are built from (be honest; they are published)
+[privacy]
+has_ads = false                       # kit only supports false; true needs a hand-written policy
+has_accounts = false                  # kit only supports false
+collects_personal_data = false        # kit only supports false
+uses_location = false                 # on-device only
+uses_internet = false
+internet_purpose = ""                 # e.g. "stream audio from public Quran audio hosts"
+uses_notifications = false
+uses_exact_alarms = false
+uses_full_screen_alert = false
+education_disclaimer = false          # religious / health / legal guidance: adds a "verify with an expert" notice
+disclaimer_text = ""
+
+[[features]]
+icon = "?"
+title = "Feature one"
+text = "What it does for the user."
+
+[listing.en-US]
+short = "Max 80 characters."
+full = """
+Up to 4000 characters.
+"""

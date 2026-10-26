@@ -1,0 +1,8 @@
+# Shared by every app. Edit once here; each app only needs its own release-kit.toml.
+[developer]
+name = "Rocket Lab"
+play_developer_url = "https://play.google.com/store/apps/developer?id=Rocket+Lab"
+base_domain = "squarebrowser.com"                 # each app gets <slug-without-dashes>.<base_domain>
+products_url = "https://squarebrowser.com/#products"
+contact_text = "Contact us through the Rocket Lab developer page on Google Play."
+default_languages = ["en-US", "bn-BD"]
